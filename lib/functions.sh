@@ -12,12 +12,26 @@ source "$SCRIPT_DIR/logging.sh"
 install_pkg() {
   # Ensure at least one package name is provided
   if [ "$#" -eq 0 ]; then
-    warn "No packages provided to install_pkg function."
+    warn "No packages passed to the install_pkg function."
     return 1
   fi
 
-  sudo apt update && sudo apt install -y "$@" >>"$LOG_FILE" 2>&1
-  return 0 # Indicate success
+  info "Updating package list..."
+  sudo apt update | tee -a "$LOG_FILE"
+
+  info "Installing packages: $*"
+  for pkg in "$@"; do
+    info "Installing $pkg..."
+    sudo apt install --assume-yes "$pkg" 2>&1 | tee -a "$LOG_FILE"
+    if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+      warn "Installation of $pkg failed. Check $LOG_FILE for details."
+      return 1
+    else
+      info "$pkg installed successfully."
+    fi
+  done
+
+  return 0
 }
 
 enable_service() {
