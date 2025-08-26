@@ -19,11 +19,11 @@ sudo apt update
 sudo apt install -y mise
 
 plugins=(
-  java
+        java
 )
 for plugin in "${plugins[@]}"; do
-  info "Installing Mise plugin: $plugin"
-  mise use -g -y "$plugin" >>"$LOG_FILE" 2>&1 || warn "Failed to install Mise plugin: $plugin"
+        info "Installing Mise plugin: $plugin"
+        mise use -g -y "$plugin" >>"$LOG_FILE" 2>&1 || warn "Failed to install Mise plugin: $plugin"
 done
 
 info "Installing pinned versions of Java and Python..."
@@ -37,8 +37,8 @@ mise_data_target="${MISE_DATA_DIR:-$HOME/.local/share/mise}"
 
 # 1. Handle old asdf-vm directory: if .asdf is a directory, rename it.
 if [ -d "$asdf_home" ] && [ ! -L "$asdf_home" ]; then
-  warn "Old ASDF directory found. Renaming to .asdf.old"
-  mv "$asdf_home" "$asdf_home.old"
+        warn "Old ASDF directory found. Renaming to .asdf.old"
+        mv "$asdf_home" "$asdf_home.old"
 fi
 
 # 2. Create or update the symlink.
@@ -50,19 +50,19 @@ ln -sfn "$mise_data_target" "$asdf_home"
 
 # 3. Provide feedback based on the outcome.
 if [ -L "$asdf_home" ] && [ "$(readlink "$asdf_home")" = "$mise_data_target" ]; then
-  # Check if the symlink now exists and points correctly
-  success "Symlink created/ensured: ~/.asdf → $mise_data_target"
+        # Check if the symlink now exists and points correctly
+        success "Symlink created/ensured: ~/.asdf → $mise_data_target"
 else
-  # This 'else' would only be hit if ln -sfn failed for some reason (e.g., permissions)
-  # or if $asdf_home somehow became a directory again after 'mv'.
-  warn "Could not ensure symlink ~/.asdf points to $mise_data_target. Manual inspection required."
+        # This 'else' would only be hit if ln -sfn failed for some reason (e.g., permissions)
+        # or if $asdf_home somehow became a directory again after 'mv'.
+        warn "Could not ensure symlink ~/.asdf points to $mise_data_target. Manual inspection required."
 fi
 
 success "Mise setup completed successfully."
 
 info "Install Docker from official repository"
 for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do
-  sudo apt-get remove $pkg
+        sudo apt-get remove $pkg
 done
 
 # Add Docker's official GPG key:
@@ -74,12 +74,12 @@ sudo chmod a+r /etc/apt/keyrings/docker.asc
 
 # Add the repository to Apt sources:
 echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+        "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" |
-  sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+        sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
 
 sudo apt update && sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
+sudo gpasswd -a $USER bluetooth
 info "Docker installed"
 
 info "Install Spotify"
